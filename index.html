@@ -27,7 +27,7 @@ h3{margin:0 0 12px}.bar2{display:flex;justify-content:space-between;align-items:
 .fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}.fg input,.fg select{width:100%}
 .stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}.stat{flex:1;min-width:100px;background:#f1f5f9;border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:22px}.stat span{font-size:12px;color:var(--mu)}
 .cg{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}.ch{text-align:center;font-size:11px;font-weight:700;color:var(--mu)}
-.cd{min-height:58px;border:1px solid var(--bd);border-radius:8px;padding:5px;background:#fafbfc}.cd.su{background:#fff3e0}.cd.w{background:#d8f1f3;border-color:var(--ac)}.cd.td{outline:2px solid var(--ac)}.cd b{display:block;font-size:12px;color:var(--ac2)}
+.cd{cursor:pointer;min-height:58px;border:1px solid var(--bd);border-radius:8px;padding:5px;background:#fafbfc}.cd.su{background:#fff3e0}.cd.w{background:#d8f1f3;border-color:var(--ac)}.cd.td{outline:2px solid var(--ac)}.cd b{display:block;font-size:12px;color:var(--ac2)}
 #bar{display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:12px 16px}.grp{display:flex;gap:4px;padding-right:14px;border-right:1px solid var(--bd)}.sh{margin-left:auto}.hint{flex-basis:100%;color:var(--mu);font-size:12px}
 #sheet{background:#fff;max-width:1100px;margin:14px auto;padding:12px;border:1px solid var(--bd);border-radius:12px;overflow-x:auto;box-shadow:0 1px 3px #0f172a14}
 #sheet table{min-width:760px;width:100%;border-collapse:collapse}
@@ -45,19 +45,29 @@ h3{margin:0 0 12px}.bar2{display:flex;justify-content:space-between;align-items:
 #homeB{width:66px;height:66px;border-radius:50%;background:var(--ac);border:5px solid var(--bg);padding:0;box-shadow:0 4px 10px #0005;display:flex;align-items:center;justify-content:center;margin:0}
 .bk{position:absolute;left:calc(100% + 4px);top:30px;background:#1f4654;padding:8px 12px;white-space:nowrap}
 .out{position:absolute;right:12px;top:12px;background:#b91c1c}
-#pad,#shr{position:fixed;inset:0;background:#0008;display:flex;align-items:center;justify-content:center;z-index:9}
+#pad,#shr,#dm{position:fixed;inset:0;background:#0008;display:flex;align-items:center;justify-content:center;z-index:9}
 #pad canvas{background:#fff;border:1px solid #000;touch-action:none;max-width:100%}
 .mdl{background:#fff;padding:18px;border-radius:12px;display:flex;flex-direction:column;gap:6px;min-width:260px}.mdl button{padding:12px}
 @media(max-width:600px){.f{grid-template-columns:1fr}.grp{border:0}}
+.chip{display:inline-block;background:#e6f2f3;color:var(--ac2);padding:5px 12px;border-radius:99px;margin:4px 4px 0 0;font-weight:600;font-size:12px;cursor:pointer}
+.mdl label{display:flex;flex-direction:column;gap:3px;font-weight:600;font-size:12px}
+.pp{background:#fff;color:#000;font:10px/1.3 "Segoe UI",Arial,sans-serif;width:100%}
+.pp .hd{display:flex;justify-content:space-between;align-items:center;border:2px solid #000;padding:3px 6px;margin:0 0 4px}.pp .hd img{height:46px}
+.pp h2{text-align:center;font-size:15px;margin:3px 0}
+.pp .f{display:grid;grid-template-columns:1fr 1fr;gap:4px 18px;margin:4px 0}.pp .f>div{display:flex;gap:6px;align-items:center}
+.pp .f b{width:92px;font-size:8px;flex:none}
+.pp .g{flex:1;display:block;background:#d9dde0;padding:2px 6px;min-height:20px;font-size:10px;font-weight:600}
+.pp .sg{height:22px}.pp table{width:100%;border-collapse:collapse;min-width:0}
+.pp th,.pp td{border:1px solid #000;padding:0 3px;font-size:8.5px;height:16px;text-align:center}.pp th{background:#e6f2f3}
+.pp .sun td{background:#fff3e0}.pp .tot td{font-weight:700;background:#f1f5f9}
+#pv{display:none}
 @media print{@page{size:A4 portrait;margin:8mm}
-#top,#nav,#list,#cal,#staff,#bar,#shr,#pad{display:none!important}
-body{padding:0;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-#sheet{margin:0;border:0;box-shadow:none;max-width:none;padding:0;overflow:visible;page-break-inside:avoid}
-#sheet table{min-width:0}#sheet th,#sheet td{font-size:8.5px;height:16px;padding:0 3px}#sheet td input{font-size:8.5px}.g{min-height:20px;padding:2px 6px;font-size:10px}.sg{height:24px}.hd{padding:3px}.f{margin:4px 0}}
+#app,#login,#shr,#pad,#dm{display:none!important}#pv{display:block}
+body{padding:0;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 </style></head><body>
 
 <div id="login" class="card"><h2>Overtime Portal</h2>
-<input id="em" type="email" placeholder="Email"><input id="pw" type="password" placeholder="Password">
+<input id="em" list="ul" placeholder="Username or email" autocapitalize="none" autocomplete="username"><datalist id="ul"></datalist><div id="chips"></div><input id="pw" type="password" placeholder="Password">
 <button onclick="login()" style="width:100%">Sign in</button><p id="lerr" class="err"></p></div>
 
 <div id="app" hidden>
@@ -67,7 +77,7 @@ body{padding:0;background:#fff;-webkit-print-color-adjust:exact;print-color-adju
 <div id="main">
 <div id="list" class="card" hidden></div><div id="cal" class="card" hidden></div>
 <div id="staff" class="card" hidden><h3 id="fh">Create user</h3>
-<div class="fg"><input id="nn" placeholder="Full name"><input id="ne" placeholder="Employee no."><input id="nm" type="email" placeholder="Email"><input id="np" placeholder="Temp password (6+)">
+<div class="fg"><input id="nn" placeholder="Full name"><input id="ne" placeholder="Employee no."><input id="nm" placeholder="Username" autocapitalize="none"><input id="np" placeholder="Temp password (6+)">
 <select id="nr"><option value="employee">Employee</option><option value="manager">Manager</option></select></div>
 <div style="margin-top:8px"><button id="sb" onclick="mkUser()">Create</button><button id="cb" class="o" onclick="clearForm()" hidden>Cancel</button> <small id="smsg" class="mu"></small></div>
 <div id="slist" style="margin-top:18px;overflow-x:auto"></div></div>
@@ -77,6 +87,7 @@ body{padding:0;background:#fff;-webkit-print-color-adjust:exact;print-color-adju
 
 <div id="shr" hidden onclick="if(event.target==this)this.hidden=true"><div class="mdl"><h3>Share timesheet</h3>
 <button onclick="shr('p')">Print</button><button onclick="shr('d')">Download PDF</button><button onclick="shr('s')">Share via WhatsApp, email&hellip;</button><button class="o" onclick="$('shr').hidden=true">Close</button></div></div>
+<div id="dm" hidden onclick="if(event.target==this)this.hidden=true"></div>
 <div id="pad" hidden><div style="background:#fff;padding:12px;border-radius:8px">
 <canvas id="cv" width="420" height="160"></canvas><br>
 <button onclick="padSave()">Save signature</button><button class="g" onclick="padClear()">Clear</button><button class="r" onclick="$('pad').hidden=true">Cancel</button></div></div>
@@ -93,9 +104,15 @@ firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth(),db=firebase.firestore(),$=id=>document.getElementById(id);
 const MON=["January","February","March","April","May","June","July","August","September","October","November","December"];
 const DAY=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-let me,cur,staff={},H=[],editId=null,hist=[],scr=null,P={y:new Date().getFullYear(),m:new Date().getMonth()};
+let CD,me,cur,staff={},H=[],editId=null,hist=[],scr=null,P={y:new Date().getFullYear(),m:new Date().getMonth()};
 $('mon').innerHTML=MON.map((n,i)=>`<option value="${i}">${n}</option>`).join('');$('mon').value=P.m;$('yr').value=P.y;
 const rd=()=>{P.m=+$('mon').value;P.y=+$('yr').value},f2=n=>(n||0).toFixed(2),f=n=>n?n.toFixed(2):'',bd=x=>`<span class="b ${x}">${x}</span>`;
+const DOM='@overtime.app';
+async function loadNames(){let n=[],ok=false;try{n=JSON.parse(localStorage.getItem('uns')||'[]')}catch(e){}
+ try{const q=await db.collection('usernames').get();n=q.docs.map(d=>d.id);ok=true;localStorage.setItem('uns',JSON.stringify(n))}catch(e){}
+ n=[...new Set(n)].sort();$('ul').innerHTML=n.map(x=>`<option value="${x}">`).join('');
+ $('chips').innerHTML=n.map(x=>`<span class="chip" onclick="$('em').value='${x}';$('pw').focus()">${x}</span>`).join('')}
+loadNames();
 const say=t=>{const e=$('msg');if(e)e.textContent=t};
 
 /* ---------- navigation ---------- */
@@ -108,9 +125,10 @@ function view(v,t){['list','cal','staff'].forEach(x=>$(x).hidden=x!=v);$('sheet'
  if(t)[...$('tiles').children].forEach(e=>e.classList.toggle('on',e.dataset.t==t));window.scrollTo(0,0)}
 
 /* ---------- auth ---------- */
-function login(){$('lerr').textContent='';auth.signInWithEmailAndPassword($('em').value,$('pw').value).catch(e=>$('lerr').textContent=e.message)}
+function login(){$('lerr').textContent='';const v=$('em').value.trim().toLowerCase();
+ auth.signInWithEmailAndPassword(v.includes('@')?v:v+DOM,$('pw').value).catch(e=>$('lerr').textContent=e.code=='auth/invalid-credential'?'Incorrect username or password.':e.message)}
 auth.onAuthStateChanged(async u=>{
- if(!u){me=null;$('app').hidden=true;$('login').hidden=false;return}
+ if(!u){me=null;$('app').hidden=true;$('login').hidden=false;loadNames();return}
  const s=await db.collection('users').doc(u.uid).get();
  if(!s.exists){$('lerr').textContent='Account not set up. Contact management.';auth.signOut();return}
  me={uid:u.uid,...s.data()};staff={};$('who').textContent=`${me.name} · ${me.role}`;
@@ -146,30 +164,33 @@ function histRows(){const fl=$('hf')?$('hf').value:'',mg=me.role=='manager',r=H.
 
 /* ---------- employee calendar ---------- */
 async function showCal(){view('cal','Calendar');rd();
- try{const s=await db.collection('timesheets').doc(`${me.uid}_${P.y}-${P.m+1}`).get(),d=s.exists?s.data():{e:{},status:'none'};
+ try{const s=await db.collection('timesheets').doc(`${me.uid}_${P.y}-${P.m+1}`).get();CD={id:`${me.uid}_${P.y}-${P.m+1}`,d:s.exists?s.data():{uid:me.uid,ym:`${P.y}-${P.m+1}`,e:{},status:'draft',auth:'',mgrName:''}};const d=CD.d;
  const n=new Date(P.y,P.m+1,0).getDate(),off=(new Date(P.y,P.m,1).getDay()+6)%7,now=new Date();let c='';
  ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(x=>c+=`<div class="ch">${x}</div>`);
  for(let i=0;i<off;i++)c+='<div></div>';
  for(let i=1;i<=n;i++){const r=calc(i,(d.e||{})[i]||{}),w=new Date(P.y,P.m,i).getDay();
-  c+=`<div class="cd${r?' w':''}${w==0?' su':''}${now.getFullYear()==P.y&&now.getMonth()==P.m&&now.getDate()==i?' td':''}">${i}${r?`<b>${r.h.toFixed(1)}h</b>`:''}</div>`}
+  c+=`<div onclick="dayEdit(${i})" class="cd${r?' w':''}${w==0?' su':''}${now.getFullYear()==P.y&&now.getMonth()==P.m&&now.getDate()==i?' td':''}">${i}${((d.e||{})[i]||{}).ph?' <small>PH</small>':''}${r?`<b>${r.h.toFixed(1)}h</b>`:''}</div>`}
  $('cal').innerHTML=`<div class="bar2"><h3>${MON[P.m]} ${P.y}</h3>${bd(d.status)}</div><div class="cg">${c}</div>
  <div class="bar2" style="margin-top:14px"><span class="mu">Total <b>${f2(d.tot)}</b> hrs · 2.0: <b>${f2(d.dbl)}</b> · 1.5: <b>${f2(d.o15)}</b></span><button onclick="go(openSheet,me.uid)">Open timesheet</button></div>`}catch(e){err('cal',e)}}
 
 /* ---------- staff management ---------- */
 async function showStaff(){view('staff','Staff');
- try{await ld();$('slist').innerHTML='<h3>Staff</h3><table class="dt"><tr><th>Name</th><th>Emp no.</th><th>Email</th><th>Role</th><th></th></tr>'+Object.entries(staff).map(([i,u])=>
- `<tr><td>${u.name}</td><td>${u.empNo||''}</td><td>${u.email}</td><td>${u.role}</td><td style="white-space:nowrap"><button class="o" onclick="editU('${i}')">Edit</button><button class="o" onclick="resetPw('${i}')">Reset password</button>${i==me.uid?'':`<button class="r" onclick="delU('${i}')">Delete</button>`}</td></tr>`).join('')+'</table>'}catch(e){err('slist',e)}}
+ try{await ld();$('slist').innerHTML='<h3>Staff</h3><table class="dt"><tr><th>Name</th><th>Emp no.</th><th>Username</th><th>Role</th><th></th></tr>'+Object.entries(staff).map(([i,u])=>
+ `<tr><td>${u.name}</td><td>${u.empNo||''}</td><td>${u.username||u.email}</td><td>${u.role}</td><td style="white-space:nowrap"><button class="o" onclick="editU('${i}')">Edit</button>${u.email.endsWith(DOM)?'':`<button class="o" onclick="resetPw('${i}')">Reset password</button>`}${i==me.uid?'':`<button class="r" onclick="delU('${i}')">Delete</button>`}</td></tr>`).join('')+'</table>'}catch(e){err('slist',e)}}
 function clearForm(){editId=null;['nn','ne','nm','np'].forEach(i=>{$(i).value='';$(i).disabled=false});$('nr').value='employee';$('fh').textContent='Create user';$('sb').textContent='Create';$('cb').hidden=true}
-function editU(id){const u=staff[id];editId=id;$('nn').value=u.name;$('ne').value=u.empNo||'';$('nm').value=u.email;$('nm').disabled=$('np').disabled=true;$('np').value='';$('nr').value=u.role;
+function editU(id){const u=staff[id];editId=id;$('nn').value=u.name;$('ne').value=u.empNo||'';$('nm').value=u.username||u.email;$('nm').disabled=$('np').disabled=true;$('np').value='';$('nr').value=u.role;
  $('fh').textContent='Edit user';$('sb').textContent='Save changes';$('cb').hidden=false;window.scrollTo(0,0)}
 async function mkUser(){
  try{if(editId)await db.collection('users').doc(editId).update({name:$('nn').value,empNo:$('ne').value,role:$('nr').value});
  else{const app=firebase.apps.find(a=>a.name=='sec')||firebase.initializeApp(firebaseConfig,'sec');
-  const c=await app.auth().createUserWithEmailAndPassword($('nm').value,$('np').value);
-  await db.collection('users').doc(c.user.uid).set({name:$('nn').value,empNo:$('ne').value,email:$('nm').value,role:$('nr').value});await app.auth().signOut()}
+  const un=$('nm').value.trim().toLowerCase();if(!/^[a-z0-9._-]{3,}$/.test(un))throw new Error('Username: 3+ letters/numbers, no spaces.');
+  const c=await app.auth().createUserWithEmailAndPassword(un+DOM,$('np').value);
+  await db.collection('users').doc(c.user.uid).set({name:$('nn').value,empNo:$('ne').value,username:un,email:un+DOM,role:$('nr').value});await app.auth().signOut();
+  try{await db.collection('usernames').doc(un).set({name:$('nn').value})}catch(e){}
+  let l=[];try{l=JSON.parse(localStorage.getItem('uns')||'[]')}catch(e){}localStorage.setItem('uns',JSON.stringify([...new Set([...l,un])]))}
  clearForm();$('smsg').textContent='Saved.';showStaff()}catch(e){$('smsg').textContent=e.message}}
 async function delU(id){if(!confirm(`Delete ${staff[id].name} and all their timesheets? This cannot be undone.`))return;
- const q=await db.collection('timesheets').where('uid','==',id).get(),b=db.batch();q.forEach(d=>b.delete(d.ref));b.delete(db.collection('users').doc(id));await b.commit();showStaff()}
+ const q=await db.collection('timesheets').where('uid','==',id).get(),b=db.batch();q.forEach(d=>b.delete(d.ref));b.delete(db.collection('users').doc(id));await b.commit();try{await db.collection('usernames').doc(staff[id].username||'_').delete()}catch(e){}showStaff()}
 function resetPw(id){auth.sendPasswordResetEmail(staff[id].email).then(()=>alert('Password reset email sent to '+staff[id].email),e=>alert(e.message))}
 
 /* ---------- timesheet ---------- */
@@ -210,7 +231,7 @@ function render(){
  <div><b>YEAR:</b><span class="g">${P.y}</span></div>
  <div><b>EMPLOYEE'S SIGNATURE:</b><span class="g">${sig('empSig')}</span></div></div>
  <table><tr><th>DATE</th><th>Day</th><th>START TIME</th><th>END TIME</th><th>Total Hours Worked</th><th>2 O/TIME</th><th>1.5 O/TIME</th><th>Public Holiday</th><th>Night shift</th><th>Remarks</th></tr>${r}
- <tr class="tot"><td colspan="4" style="text-align:right">Total Hours</td><td id="TH"></td><td id="TD"></td><td id="T15"></td><td id="TP"></td><td id="TN"></td><td></td></tr></table>
+ <tr class="tot"><td colspan="4" style="text-align:right">Total Hours</td><td id="TH"></td><td id="TD"></td><td id="T15"></td><td id="TP"></td><td id="TN"></td><td id="TR" style="font-size:8px;line-height:1.1"></td></tr></table>
  <div class="f" style="grid-template-columns:auto"><div><b style="width:150px">OVERTIME AUTHORISED:</b>${m&&d.status!='approved'?`<select class="g" style="flex:none;width:110px" onchange="cur.d.auth=this.value"><option value="">—</option><option ${d.auth=='YES'?'selected':''}>YES</option><option ${d.auth=='NO'?'selected':''}>NO</option></select>`:`<span class="g" style="flex:none;width:110px">${d.auth||''}</span>`}<small class="mu">Status: ${d.status}</small></div></div>`;
  const grp=h=>h?`<div class="grp">${h}</div>`:'';
  $('bar').innerHTML=(own&&E?'<div class="hint">Enter start and end times for each day worked, tick Public Holiday where needed, then Save, Sign and Submit to management.</div>':'')+
@@ -225,8 +246,8 @@ function recompute(){
  for(let i=1;i<=n;i++){const c=calc(i,cur.d.e[i]||{});
   $('h'+i).textContent=c?f(c.h):'';$('d'+i).textContent=c?f(c.dbl):'';$('n'+i).textContent=c?f(c.ni):'';
   if(c){Ht+=c.h;D+=c.dbl;PH+=c.ph;N+=c.ni}}
- const o15=Math.max(0,Ht-D-OT_THRESHOLD);Object.assign(cur.d,{tot:Ht,dbl:D,o15});
- $('TH').textContent=Ht.toFixed(2);$('TD').textContent=D.toFixed(2);$('T15').textContent=o15.toFixed(2);$('TP').textContent=PH.toFixed(2);$('TN').textContent=N.toFixed(2);
+ const o15=Math.max(0,Ht-OT_THRESHOLD);Object.assign(cur.d,{tot:Ht,dbl:D,o15});
+ $('TH').textContent=Ht.toFixed(2);$('TD').textContent=D.toFixed(2);$('T15').textContent=o15.toFixed(2);$('TP').textContent=PH.toFixed(2);$('TN').textContent=N.toFixed(2);$('TR').textContent=Ht>OT_THRESHOLD?`Exceeded monthly hours by ${+(Ht-OT_THRESHOLD).toFixed(2)} hours`:'';
 }
 async function save(){try{await db.collection('timesheets').doc(cur.id).set(cur.d);say('Saved ✔')}catch(e){say(e.message)}}
 async function submitS(){if(!cur.d.empSig)return say('Please sign first.');
@@ -236,23 +257,38 @@ async function approve(){if(!cur.d.mgrSig)return say('Manager signature required
 async function ret(){cur.d.status='draft';cur.d.mgrSig='';await save();render();say('Returned to employee')}
 
 /* ---------- share / print / pdf ---------- */
+const esc=x=>String(x||'').replace(/"/g,'&quot;');
+function tots(e){let tot=0,dbl=0;for(const k in e){const c=calc(+k,e[k]);if(c){tot+=c.h;dbl+=c.dbl}}return{tot,dbl,o15:Math.max(0,tot-OT_THRESHOLD)}}
+function dayEdit(i){const e=CD.d.e[i]||{},lk=['submitted','approved'].includes(CD.d.status),x=lk?'disabled':'';
+ $('dm').innerHTML=`<div class="mdl"><h3>${DAY[new Date(P.y,P.m,i).getDay()]}, ${i} ${MON[P.m]} ${P.y}</h3>
+ <label>Start time<input type="time" id="ds" value="${e.s||''}" ${x}></label><label>End time<input type="time" id="de" value="${e.e||''}" ${x}></label>
+ <label style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" id="dp" ${e.ph?'checked':''} ${x}> Public holiday</label>
+ <label>Remarks<input id="dr" value="${esc(e.r)}" ${x}></label>
+ ${lk?'<small class="mu">This timesheet is locked.</small>':`<button onclick="daySave(${i})">Save</button><button class="g" onclick="daySave(${i},1)">Clear day</button>`}
+ <button class="o" onclick="$('dm').hidden=true">Close</button></div>`;$('dm').hidden=false}
+async function daySave(i,clr){const e=CD.d.e;if(clr)delete e[i];else e[i]={s:$('ds').value,e:$('de').value,ph:$('dp').checked,r:$('dr').value};
+ const t=tots(e);Object.assign(CD.d,{tot:t.tot,dbl:t.dbl,o15:t.o15});
+ try{await db.collection('timesheets').doc(CD.id).set(CD.d)}catch(x){alert(x.message);return}
+ $('dm').hidden=true;showCal()}
+
+/* print + PDF share one static layout */
+function buildPv(pdf){const o=$('pv');if(o)o.remove();const c=$('sheet').cloneNode(true);
+ c.querySelectorAll('input,select').forEach(i=>{const s=document.createElement('span');s.className=i.className;s.textContent=i.type=='checkbox'?(i.checked?'✓':''):i.value;i.replaceWith(s)});
+ c.querySelectorAll('[id]').forEach(e=>e.removeAttribute('id'));['id','hidden','style'].forEach(a=>c.removeAttribute(a));c.className='pp';
+ if(pdf)c.style.cssText='position:fixed;left:-9999px;top:0;width:740px';else c.id='pv';
+ document.body.appendChild(c);return c}
 const fname=()=>`Overtime_${cur.prof.name.replace(/\s+/g,'_')}_${MON[P.m]}_${P.y}.pdf`;
-async function mkPdf(){
- const c=$('sheet').cloneNode(true);
- c.querySelectorAll('input').forEach(i=>{const s=document.createElement('span');s.textContent=i.type=='checkbox'?(i.checked?'✓':''):i.value;i.replaceWith(s)});
- c.querySelectorAll('select').forEach(i=>{const s=document.createElement('span');s.textContent=i.value;i.replaceWith(s)});
- Object.assign(c.style,{position:'fixed',left:'-9999px',top:'0',width:'900px',maxWidth:'none',margin:'0',border:'0',overflow:'visible',background:'#fff'});
- document.body.appendChild(c);
- const cv=await html2canvas(c,{scale:2,backgroundColor:'#fff'});c.remove();
+async function mkPdf(){const c=buildPv(true),cv=await html2canvas(c,{scale:3,backgroundColor:'#fff'});c.remove();
  const pdf=new window.jspdf.jsPDF('p','mm','a4'),W=194,Hh=281;let w=W,h=cv.height*W/cv.width;if(h>Hh){h=Hh;w=cv.width*Hh/cv.height}
  pdf.addImage(cv.toDataURL('image/jpeg',.95),'JPEG',(210-w)/2,8,w,h);return pdf}
 async function shr(k){$('shr').hidden=true;
- try{if(k=='p'){setTimeout(()=>window.print(),100);return}
+ try{if(k=='p'){buildPv();setTimeout(()=>window.print(),150);return}
  say('Preparing PDF…');const pdf=await mkPdf();
  if(k=='d'){pdf.save(fname());say('PDF downloaded');return}
  const file=new File([pdf.output('blob')],fname(),{type:'application/pdf'});
  if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'Overtime Form'});say('')}
  else{pdf.save(fname());say('Sharing not supported here – PDF downloaded instead.')}}catch(e){say(e.name=='AbortError'?'':e.message)}}
+window.onbeforeprint=()=>{if(cur&&!$('sheet').hidden)buildPv()};
 
 /* ---------- signature pad ---------- */
 let key,drawing=false;const cv=$('cv'),cx=cv.getContext('2d');
