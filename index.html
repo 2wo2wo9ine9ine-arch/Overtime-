@@ -49,6 +49,8 @@ h3{margin:0 0 12px}.bar2{display:flex;justify-content:space-between;align-items:
 #pad canvas{background:#fff;border:1px solid #000;touch-action:none;max-width:100%}
 .mdl{background:#fff;padding:18px;border-radius:12px;display:flex;flex-direction:column;gap:6px;min-width:260px}.mdl button{padding:12px}
 @media(max-width:600px){.f{grid-template-columns:1fr}.grp{border:0}}
+#login{overflow:visible}.dd{position:relative}.dd input{padding-right:34px}.cv{position:absolute;right:12px;top:14px;cursor:pointer;color:var(--mu);font-size:14px}
+#dl{position:absolute;left:0;right:0;top:100%;margin-top:-2px;background:#fff;border:1px solid var(--bd);border-radius:8px;max-height:210px;overflow-y:auto;z-index:20;box-shadow:0 8px 20px #0003}#dl div{padding:11px 12px;cursor:pointer;border-bottom:1px solid #eef1f4}#dl div:hover{background:#e6f2f3}
 .chip{display:inline-block;background:#e6f2f3;color:var(--ac2);padding:5px 12px;border-radius:99px;margin:4px 4px 0 0;font-weight:600;font-size:12px;cursor:pointer}
 .mdl label{display:flex;flex-direction:column;gap:3px;font-weight:600;font-size:12px}
 .pp{background:#fff;color:#000;font:10px/1.3 "Segoe UI",Arial,sans-serif;width:100%}
@@ -67,7 +69,7 @@ body{padding:0;background:#fff;-webkit-print-color-adjust:exact;print-color-adju
 </style></head><body>
 
 <div id="login" class="card"><h2>Overtime Portal</h2>
-<input id="em" list="ul" placeholder="Username or email" autocapitalize="none" autocomplete="username"><datalist id="ul"></datalist><div id="chips"></div><input id="pw" type="password" placeholder="Password">
+<div class="dd"><input id="em" placeholder="Username or email" autocapitalize="none" autocomplete="off" oninput="ddShow()" onfocus="ddShow()"><span class="cv" onclick="ddToggle()">&#9662;</span><div id="dl" hidden></div></div><input id="pw" type="password" placeholder="Password">
 <button onclick="login()" style="width:100%">Sign in</button><p id="lerr" class="err"></p></div>
 
 <div id="app" hidden>
@@ -107,11 +109,15 @@ const DAY=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday
 let CD,me,cur,staff={},H=[],editId=null,hist=[],scr=null,P={y:new Date().getFullYear(),m:new Date().getMonth()};
 $('mon').innerHTML=MON.map((n,i)=>`<option value="${i}">${n}</option>`).join('');$('mon').value=P.m;$('yr').value=P.y;
 const rd=()=>{P.m=+$('mon').value;P.y=+$('yr').value},f2=n=>(n||0).toFixed(2),f=n=>n?n.toFixed(2):'',bd=x=>`<span class="b ${x}">${x}</span>`;
-const DOM='@overtime.app';
+let NM=[];const DOM='@overtime.app';
 async function loadNames(){let n=[],ok=false;try{n=JSON.parse(localStorage.getItem('uns')||'[]')}catch(e){}
  try{const q=await db.collection('usernames').get();n=q.docs.map(d=>d.id);ok=true;localStorage.setItem('uns',JSON.stringify(n))}catch(e){}
- n=[...new Set(n)].sort();$('ul').innerHTML=n.map(x=>`<option value="${x}">`).join('');
- $('chips').innerHTML=n.map(x=>`<span class="chip" onclick="$('em').value='${x}';$('pw').focus()">${x}</span>`).join('')}
+ NM=[...new Set(n)].sort()}
+function ddShow(all){const v=all===true?'':$('em').value.trim().toLowerCase(),r=NM.filter(x=>x.includes(v));
+ $('dl').innerHTML=r.map(x=>`<div onclick="pick('${x}')">${x}</div>`).join('');$('dl').hidden=!r.length}
+function ddToggle(){if(!$('dl').hidden){$('dl').hidden=true;return}ddShow(true)}
+function pick(x){$('em').value=x;$('dl').hidden=true;$('pw').focus()}
+document.addEventListener('click',e=>{if(!e.target.closest('.dd'))$('dl').hidden=true});
 loadNames();
 const say=t=>{const e=$('msg');if(e)e.textContent=t};
 
@@ -226,7 +232,7 @@ function render(){
  <div class="f"><div><b>NAME:</b><span class="g">${p.name}</span></div>
  <div><b>DEPARTMENT MANAGER'S NAME:</b><input class="g" id="mgn" value="${d.mgrName||''}" ${m&&d.status!='approved'?'':'disabled'} oninput="cur.d.mgrName=this.value"></div>
  <div><b>EMPLOYEE NO.:</b><span class="g">${p.empNo||''}</span></div>
- <div><b>DATE OF SUBMISSION:</b><span class="g">${d.subDate||''}</span></div>
+ <div><b>DATE OF SUBMISSION:</b>${m?`<input type="date" class="g" value="${d.subDate||''}" oninput="cur.d.subDate=this.value">`:`<span class="g">${d.subDate||''}</span>`}</div>
  <div><b>MONTH:</b><span class="g">${MON[P.m]}</span></div>
  <div><b>DEPARTMENT MANAGER'S SIGNATURE:</b><span class="g">${sig('mgrSig')}</span></div>
  <div><b>YEAR:</b><span class="g">${P.y}</span></div>
@@ -252,7 +258,7 @@ function recompute(){
 }
 async function save(){try{await db.collection('timesheets').doc(cur.id).set(cur.d);say('Saved ✔')}catch(e){say(e.message)}}
 async function submitS(){if(!cur.d.empSig)return say('Please sign first.');
- cur.d.status='submitted';cur.d.subDate=new Date().toISOString().slice(0,10);await save();render();say('Submitted to management ✔')}
+ cur.d.status='submitted';await save();render();say('Submitted to management ✔')}
 async function approve(){if(!cur.d.mgrSig)return say('Manager signature required.');if(!cur.d.auth)return say('Select overtime authorised YES/NO.');
  cur.d.status='approved';await save();render();say('Approved ✔')}
 async function ret(){cur.d.status='draft';cur.d.mgrSig='';await save();render();say('Returned to employee')}
