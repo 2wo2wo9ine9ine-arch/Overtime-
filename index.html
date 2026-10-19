@@ -26,8 +26,8 @@ h3{margin:0 0 12px}.bar2{display:flex;justify-content:space-between;align-items:
 .b.submitted{background:#fef3c7;color:#92400e}.b.approved{background:#d1fae5;color:#065f46}.b.draft{background:#e0e7ff;color:#3730a3}
 .fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}.fg input,.fg select{width:100%}
 .stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}.stat{flex:1;min-width:100px;background:#f1f5f9;border-radius:10px;padding:10px 14px}.stat b{display:block;font-size:22px}.stat span{font-size:12px;color:var(--mu)}
-.cg{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}.ch{text-align:center;font-size:11px;font-weight:700;color:var(--mu)}
-.cd{cursor:pointer;min-height:58px;border:1px solid var(--bd);border-radius:8px;padding:5px;background:#fafbfc}.cd.su{background:#fff3e0}.cd.w{background:#d8f1f3;border-color:var(--ac)}.cd.td{outline:2px solid var(--ac)}.cd b{display:block;font-size:12px;color:var(--ac2)}
+.cg{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}.ch{text-align:center;font-size:11px;font-weight:700;color:var(--mu)}
+.cd{cursor:pointer;min-height:54px;border:1px solid var(--bd);border-radius:8px;padding:4px;font-size:12px;overflow:hidden;background:#fafbfc}.cd.su{background:#fff3e0}.cd.w{background:#d8f1f3;border-color:var(--ac)}.cd.td{outline:2px solid var(--ac)}.cd b{display:block;font-size:10.5px;color:var(--ac2)}
 #bar{display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:12px 16px}.grp{display:flex;gap:4px;padding-right:14px;border-right:1px solid var(--bd)}.sh{margin-left:auto}.hint{flex-basis:100%;color:var(--mu);font-size:12px}
 #sheet{background:#fff;max-width:1100px;margin:14px auto;padding:12px;border:1px solid var(--bd);border-radius:12px;overflow-x:auto;box-shadow:0 1px 3px #0f172a14}
 #sheet table{min-width:760px;width:100%;border-collapse:collapse}
@@ -200,6 +200,7 @@ async function openSheet2(uid){
  const prof=uid==me.uid?me:(staff[uid]||(await db.collection('users').doc(uid).get()).data());
  const id=`${uid}_${P.y}-${P.m+1}`,s=await db.collection('timesheets').doc(id).get();
  cur={id,prof,d:s.exists?s.data():{uid,ym:`${P.y}-${P.m+1}`,e:{},status:'draft',auth:'',mgrName:me.role=='manager'?me.name:''}};
+ if(me.role=='manager'&&!cur.d.mgrName)cur.d.mgrName=me.name;
  render();
 }
 const ed=()=>me.role=='manager'||!['submitted','approved'].includes(cur.d.status);
@@ -272,9 +273,9 @@ async function daySave(i,clr){const e=CD.d.e;if(clr)delete e[i];else e[i]={s:$('
  $('dm').hidden=true;showCal()}
 
 /* print + PDF share one static layout */
-function buildPv(pdf){const o=$('pv');if(o)o.remove();const c=$('sheet').cloneNode(true);
- c.querySelectorAll('input,select').forEach(i=>{const s=document.createElement('span');s.className=i.className;s.textContent=i.type=='checkbox'?(i.checked?'✓':''):i.value;i.replaceWith(s)});
- c.querySelectorAll('[id]').forEach(e=>e.removeAttribute('id'));['id','hidden','style'].forEach(a=>c.removeAttribute(a));c.className='pp';
+function buildPv(pdf){const o=$('pv');if(o)o.remove();const src=[...$('sheet').querySelectorAll('input,select')],c=$('sheet').cloneNode(true);
+ [...c.querySelectorAll('input,select')].forEach((i,k)=>{const q=src[k],s=document.createElement('span');s.className=i.className;s.style.cssText=i.style.cssText;s.textContent=q.type=='checkbox'?(q.checked?'✓':''):q.value;i.replaceWith(s)});
+ c.querySelectorAll('.mu').forEach(e=>e.remove());c.querySelectorAll('[id]').forEach(e=>e.removeAttribute('id'));['id','hidden','style'].forEach(a=>c.removeAttribute(a));c.className='pp';
  if(pdf)c.style.cssText='position:fixed;left:-9999px;top:0;width:740px';else c.id='pv';
  document.body.appendChild(c);return c}
 const fname=()=>`Overtime_${cur.prof.name.replace(/\s+/g,'_')}_${MON[P.m]}_${P.y}.pdf`;
